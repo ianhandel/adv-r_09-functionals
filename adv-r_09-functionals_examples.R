@@ -80,14 +80,17 @@ ggplot(cars) +
   aes(displ, hwy) +
   geom_point()
 
-cars %>% 
+cars_models <- cars %>% 
   group_by(manufacturer) %>% 
   nest() %>% 
   mutate(model = map(data, ~lm(hwy ~ displ, data = .x))) %>% 
   mutate(coefs = map(model, coef)) %>% 
-  mutate(displ = map_dbl(coefs, "displ")) %>% 
-  ggplot() +
+  mutate(displ = map_dbl(coefs, "displ")) 
+  
+ggplot(cars_models) +
   aes(x = displ,
       y = fct_reorder(manufacturer, displ, na.rm = TRUE)) +
-  geom_point()
+  geom_point() +
+  labs(x = "change in mpg per litre",
+       y = "Manufacturer")
 
