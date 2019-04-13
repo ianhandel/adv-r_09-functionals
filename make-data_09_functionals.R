@@ -6,6 +6,7 @@ library(writexl)
 
 
 mpg %>% 
-  split(mpg$manufacturer) %>% 
+  split(mpg$manufacturer) %>%
+  map(~select(.x, -manufacturer)) %>% 
   write_xlsx(path = "car_data.xlsx")
 
