@@ -2,7 +2,8 @@
 #' title: "Advanced R 09-functionals examples"
 #' date: "2019-04-17"
 #' author: "ian handel"
-#' output: html_document
+#' output: github_document
+#' 
 #' ---
 
 # ignore errors when knitting
