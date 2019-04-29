@@ -37,7 +37,7 @@ f(function(X) X + 1000)
 
 x <- c(1, 2, 3)
 
-map(x, sqrt)
+map(.x = x, .f = sqrt)
 
 #'==================================================
 #' Controlling the output
@@ -98,7 +98,7 @@ x <- list(
 
 x
 
-map(x, "y")
+map(.x = x, .f = "y")
 
 map(x, 3)
 
@@ -123,12 +123,14 @@ map(x, round, 2)
 
 map(x, round, digits = 1)
 
+map(x, ~round(.x, digits = 3))
+
 #'==================================================
 #'varying another argument - i.e. not the first
 
 roundiness <- c(0, 1, 2, 3)
 
-map_dbl(roundiness, round, pi)
+map_dbl(roundiness, round, x = pi)
 
 map_dbl(roundiness, ~ round(x = pi, digits = .x))
 
@@ -144,7 +146,7 @@ map_dbl(roundiness, ~ round(x = pi, digits = .x))
 nums <- c(1.234, 4.324, 7.223)
 roundiness <- c(1, 2, 3)
 
-map2_dbl(nums, roundiness, round)
+map2_dbl(.x = nums, .y = roundiness, .f = round)
 
 map2_dbl(nums, roundiness, ~round(.x, digits = .y))
 
@@ -154,7 +156,7 @@ map2_dbl(nums, roundiness, ~round(.x, digits = .y))
 bins <- c(5, 10, 15, 20)
 
 par(mfrow = c(2,2))
-walk(bins, ~hist(rnorm(100), breaks  = .x))
+a <- walk(bins, ~hist(rnorm(100), breaks  = .x))
 
 #'==================================================
 #' iterating over values
@@ -173,16 +175,16 @@ iwalk(bins, ~hist(rnorm(100), breaks  = .x, main = paste0("bins: ", .y)))
 #'==================================================
 #' Lots of inputs
 
-car_coolness <- function(hwy, cty, displ){
-  hwy + cty + displ * 100
+car_coolness <- function(hwy, cty, displ, ...){
+  hwy + cty + 1/(displ * 100)
 }
 
 car_coolness(hwy = 30, cty = 40, displ = 2)
 
-pmap_dbl(list(hwy = c(30, 50),
+pmap_dbl(.l = list(hwy = c(30, 50),
           cty = c(25, 67),
           displ = c(1, 2)),
-     car_coolness)
+         .f = car_coolness)
 
 pmap_dbl(mpg, car_coolness)
 
@@ -220,7 +222,7 @@ accumulate(x, `*`)
 cumprod(x)
 
 #'==================================================
-#'predicate frunctions
+#'predicate functions
 
 df <- tibble(a = c(1, 2, NA, 4),
              b = c("A", "B", "C", "N"),
@@ -230,6 +232,8 @@ some(df, is.character)
 detect(df, is.character)
 detect_index(df, is.character)
 keep(df, is.character)
+keep(df, is_bare_numeric)
+
 
 # using them...
 
@@ -237,12 +241,11 @@ mpg
 
 cor(mpg)
 
-keep(mpg, is_bare_numeric) %>% cor()
+keep(mpg, is_bare_numeric) %>% pairs()
 
 mpg
 
-a <- mpg %>%
-  modify_if(is_bare_numeric, round)
+modify_if(.x = mpg, .p = is_bare_numeric, .f = round)
 
 # b <- mpg %>%
 #   mutate_if(is_bare_numeric, round)

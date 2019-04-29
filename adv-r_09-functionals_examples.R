@@ -44,7 +44,7 @@ formulas <- list(
   mpg ~ I(1 / disp) + cyl + wt
 )
 
-map(formulas, lm, data = mtcars)
+map(formulas, ~summary(lm(.x, data = mtcars)))
 
 formulas %>% 
   set_names() %>% 
@@ -82,14 +82,14 @@ ggplot(cars) +
   geom_point()
 
 cars_models <- cars %>% 
-  group_by(manufacturer) %>% 
+  group_by(manufacturer, year) %>% 
   nest() %>% 
   mutate(model = map(data, ~lm(hwy ~ displ, data = .x))) %>% 
   mutate(coefs = map(model, coef)) %>% 
   mutate(displ = map_dbl(coefs, "displ")) 
   
 ggplot(cars_models) +
-  aes(x = displ,
+  aes(x = displ, colour = factor(year),
       y = fct_reorder(manufacturer, displ, na.rm = TRUE)) +
   geom_point() +
   labs(x = "change in mpg per litre",
